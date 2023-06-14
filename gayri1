@@ -1,0 +1,19 @@
+
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+pd.set_option("display.max_columns",None)
+pd.set_option("display.float_format", lambda x: "%.3f" % x)
+
+df_=pd.read_excel(r"C:\Users\SEFA\PycharmProjects\pythonProject\CRM ANALYTICS\Documents\crmAnalytics\datasets\online_retail_II.xlsx",sheet_name="Year 2009-2010")
+df=df_.copy()
+
+df.isnull().sum()
+df=df[~df["Invoice"].str.contains("C",na=False)]
+df.describe()
+df=df[(df["Quantity"]>0)]
+df=df.dropna()
+df["Total_Price"]=df["Quantity"]*df["Price"]
+
+cltv_c=df.groupby("Customer ID").agg({"Total_Price":lambda price:price.sum(),
+                               "Quantity": lambda quan:quan.sum(),
+                               "Invoice": lambda invo: invo.nunique()})
